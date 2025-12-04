@@ -19,6 +19,7 @@ plugin_dependencies_tree = {
 
 
 class GlancesAPI:
+    ## comment for PR
     ttl = 2.0  # Default cache TTL in seconds
 
     def __init__(self, config=None, args=None):
