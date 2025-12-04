@@ -1,4 +1,4 @@
-name: ci
+name: ci-morph
 
 on:
     pull_request:
