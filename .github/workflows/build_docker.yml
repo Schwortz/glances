@@ -103,3 +103,8 @@ jobs:
           # Use `scope` with the os name to prevent that
           cache-from: 'type=gha,scope=${{ matrix.os }}'
           cache-to: 'type=gha,mode=max,scope=${{ matrix.os }}'
+
+      - name: Dummy job that always fails
+        run: |
+          echo "This job always fails"
+          exit 1

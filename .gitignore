@@ -75,3 +75,4 @@ tests-data/issues/*/config/
 
 # Local SSL certificates
 glances.local*.pem
+.tool-versions
