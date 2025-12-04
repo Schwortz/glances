@@ -10,15 +10,19 @@ on:
 
 jobs:
     ci-success:
-      - name: CI Success
-        run: |
-          echo "success"
-          exit 0
+      runs-on: ubuntu-latest
+      steps:
+        - name: CI Success
+          run: |
+            echo "success"
+            exit 0
     ci-failure:
-      - name: CI Failure
-        run: |
-          echo "failure"
-          exit 1
+      runs-on: ubuntu-latest
+      steps:
+        - name: CI Failure
+          run: |
+            echo "failure"
+            exit 1
     # quality:
     #   uses: ./.github/workflows/quality.yml
     # test:
@@ -47,7 +51,7 @@ jobs:
             {
               "workflow_run": "${{ github.run_id }}",
               "ci-success": "${{ needs.ci-success.result }}",
-              "ci-failure": "${{ needs.ci-failure.result }}",
+              "ci-failure": "${{ needs.ci-failure.result }}"
             }
             EOF
             cat job_results.json
@@ -55,7 +59,7 @@ jobs:
           uses: actions/upload-artifact@v4
           if: always()
           with:
-            name: job-results`
+            name: job-results
             path: job_results.json
             retention-days: 30
         - name: Publish results to Morph
