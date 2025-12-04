@@ -1,0 +1,52 @@
+name: ci
+
+on:
+    pull_request:
+      branches: [ develop ]
+    push:
+      branches: [ master, develop ]
+      tags:
+        - v*
+
+jobs:
+    quality:
+      uses: ./.github/workflows/quality.yml
+    test:
+      uses: ./.github/workflows/test.yml
+      needs: [quality]
+    build:
+      if: github.event_name != 'pull_request'
+      uses: ./.github/workflows/build.yml
+      needs: [quality, test]
+    build_docker:
+      if: github.event_name != 'pull_request'
+      uses: ./.github/workflows/build_docker.yml
+      secrets:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      needs: [quality, test]
+    aggregate_results:
+      if: always()
+      runs-on: ubuntu-latest
+      needs: [quality, test, build, build_docker]
+      steps:
+        - name: Aggregate job results
+          run: |
+            cat > job_results.json << EOF
+            {
+              "quality": "${{ needs.quality.result }}",
+              "test": "${{ needs.test.result }}",
+              "build": "${{ needs.build.result }}",
+              "build_docker": "${{ needs.build_docker.result }}",
+              "workflow_run": "${{ github.run_id }}",
+              "workflow_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+            EOF
+            cat job_results.json
+        - name: Upload results
+          uses: actions/upload-artifact@v4
+          if: always()
+          with:
+            name: job-results
+            path: job_results.json
+            retention-days: 30
