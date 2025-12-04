@@ -10,13 +10,15 @@ on:
 
 jobs:
     ci-success:
-      script: |
-        echo "success"
-        exit 0
+      - name: CI Success
+        run: |
+          echo "success"
+          exit 0
     ci-failure:
-      script: |
-        echo "failure"
-        exit 1
+      - name: CI Failure
+        run: |
+          echo "failure"
+          exit 1
     # quality:
     #   uses: ./.github/workflows/quality.yml
     # test:
@@ -44,7 +46,6 @@ jobs:
             cat > job_results.json << EOF
             {
               "workflow_run": "${{ github.run_id }}",
-              "workflow_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
               "ci-success": "${{ needs.ci-success.result }}",
               "ci-failure": "${{ needs.ci-failure.result }}",
             }
@@ -58,7 +59,7 @@ jobs:
             path: job_results.json
             retention-days: 30
         - name: Publish results to Morph
-          script: |
+          run: |
             curl -X 'POST' \
             'https://unexcruciating-josh-unacclivitously.ngrok-free.dev/v1/morph/ci/build-results' \
             -H 'accept: application/json' \
